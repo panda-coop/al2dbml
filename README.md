@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/al2dbml.svg)](https://pypi.org/project/al2dbml/)
 [![Python versions](https://img.shields.io/pypi/pyversions/al2dbml.svg)](https://pypi.org/project/al2dbml/)
-[![CI](https://github.com/mykola-kharchenko/al2dbml/actions/workflows/ci.yml/badge.svg)](https://github.com/mykola-kharchenko/al2dbml/actions/workflows/ci.yml)
+[![CI](https://github.com/panda-coop/al2dbml/actions/workflows/ci.yml/badge.svg)](https://github.com/panda-coop/al2dbml/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
@@ -135,11 +135,11 @@ diagram = Diagram.from_app(
     "MyApp.app",
     grouping=GroupingConfig(rules={"Documents": ["Sales*", "Purch*"]}),
     includes=["Sales*", "Customer"],
-    docs=...,                            # optional AldocDocs from al2dbml.aldoc.load_docs
+    docs=...,  # optional AldocDocs from al2dbml.aldoc.load_docs
 )
-print(diagram.dbml())                    # build + render
-print(diagram.stats())                   # {'tables': N, 'columns': N, ...}
-print(diagram.context.tables.keys())     # inspect the live BuildContext
+print(diagram.dbml())  # build + render
+print(diagram.stats())  # {'tables': N, 'columns': N, ...}
+print(diagram.context.tables.keys())  # inspect the live BuildContext
 ```
 
 `Diagram` is a single-shot dataclass: `build()` is cached, so mutating its fields after the first call has no effect. Construct a new instance to rebuild with different settings.
@@ -165,5 +165,11 @@ python -m venv .venv
 .venv/bin/pytest -q
 .venv/bin/ruff check . && .venv/bin/ruff format --check .
 ```
+
+Contributions require a DCO sign-off — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Man pages (`al2dbml(1)`, `al2dbml-validate(1)`) live as podman-style Markdown under
+[`docs/`](docs/) and build with `go-md2man`; the `man` CI job verifies they compile.
+Read one locally with `go-md2man -in docs/al2dbml.1.md | man -l -`.
 
 Tags matching `v*` trigger a PyPI Trusted Publisher upload via `.github/workflows/publish.yml`.

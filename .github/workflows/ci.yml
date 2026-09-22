@@ -40,3 +40,18 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+  man:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install go-md2man
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq go-md2man
+
+      - name: Build man pages
+        run: |
+          mkdir -p build/man
+          for md in docs/*.1.md; do
+            go-md2man -in "$md" -out "build/man/$(basename "${md%.md}")"
+          done

@@ -4,6 +4,17 @@ All notable changes to `al2dbml` land here. The format follows
 [Keep a Changelog](https://keepachangelog.com/) and the project follows
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Man pages `al2dbml(1)` and `al2dbml-validate(1)`, authored as podman-style Markdown under `docs/` and built with `go-md2man` (a new `man` CI job verifies they compile). pip/uv installs can't place files on `MANPATH`, so the pages serve distro packagers, the repo itself, and `man -l`.
+
+### Changed
+
+- `al2dbml --help` is reshaped into the section layout Red Hat CLIs (podman, buildah) use: a one-line summary, then `Description:` / `Usage:` / `Examples:` / `Options:` sections, with the options as one flat alphabetical two-column list — short flags aligned left, long-only flags indented to the long-flag column, defaults in parentheses. Help texts are tightened to podman-length one-liners; the full flag-by-flag prose stays in the README. No flag names, defaults, or behaviour change.
+- Project transferred to the [panda-coop](https://github.com/panda-coop) GitHub organization. `[project.urls]` and the README CI badge now point at `github.com/panda-coop/al2dbml`, the author email in package metadata is the panda.coop address, and the `// https://...` line in the generated-DBML provenance header carries the new URL. The old `mykola-kharchenko/al2dbml` URLs redirect, so nothing breaks for existing consumers. License and copyright are unchanged (MIT, Mykola Kharchenko).
+
 ## [0.9.0] - 2026-05-29
 
 Adds the DBML `Project` block so dbdocs.io renders the schema with a proper engine label, and rewrites the README into a leaner, flag-by-flag reference. The Project block is additive — existing parsers that only look at `Table`/`Ref`/`Enum`/`TableGroup` are unaffected — but the rendered DBML grows a new top section, hence the minor bump.
@@ -291,27 +302,27 @@ Initial release.
 - `al2dbml` console script with `-o`, `--merge-extensions/--no-merge-extensions`, `-g`, `--no-groups`, `--no-auto-groups`, `--min-group-size`, `--version`, `-h/--help`.
 - Public Python API: `Generator`, `generate`, `GroupingConfig`, `__version__`.
 
-[0.9.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.9.0
-[0.8.3]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.8.3
-[0.8.2]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.8.2
-[0.8.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.8.1
-[0.8.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.8.0
-[0.7.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.7.0
-[0.6.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.6.1
-[0.6.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.6.0
-[0.5.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.5.1
-[0.5.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.5.0
-[0.4.4]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.4.4
-[0.4.3]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.4.3
-[0.4.2]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.4.2
-[0.4.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.4.1
-[0.4.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.4.0
-[0.3.3]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.3.3
-[0.3.2]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.3.2
-[0.3.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.3.1
-[0.3.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.3.0
-[0.2.3]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.2.3
-[0.2.2]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.2.2
-[0.2.1]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.2.1
-[0.2.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.2.0
-[0.1.0]: https://github.com/mykola-kharchenko/al2dbml/releases/tag/v0.1.0
+[0.9.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.9.0
+[0.8.3]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.3
+[0.8.2]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.2
+[0.8.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.1
+[0.8.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.0
+[0.7.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.7.0
+[0.6.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.6.1
+[0.6.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.6.0
+[0.5.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.5.1
+[0.5.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.5.0
+[0.4.4]: https://github.com/panda-coop/al2dbml/releases/tag/v0.4.4
+[0.4.3]: https://github.com/panda-coop/al2dbml/releases/tag/v0.4.3
+[0.4.2]: https://github.com/panda-coop/al2dbml/releases/tag/v0.4.2
+[0.4.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.4.1
+[0.4.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.4.0
+[0.3.3]: https://github.com/panda-coop/al2dbml/releases/tag/v0.3.3
+[0.3.2]: https://github.com/panda-coop/al2dbml/releases/tag/v0.3.2
+[0.3.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.3.1
+[0.3.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.3.0
+[0.2.3]: https://github.com/panda-coop/al2dbml/releases/tag/v0.2.3
+[0.2.2]: https://github.com/panda-coop/al2dbml/releases/tag/v0.2.2
+[0.2.1]: https://github.com/panda-coop/al2dbml/releases/tag/v0.2.1
+[0.2.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.2.0
+[0.1.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.1.0

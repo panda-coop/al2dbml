@@ -4,14 +4,95 @@ from pathlib import Path
 from typing import cast
 
 import click
+from click.formatting import wrap_text
 
 from . import __version__
 from .aldoc import AldocDocs, load_docs
 from .diagram import Diagram
 from .grouping import GroupingConfig, GroupSource, parse_rule_strings
 
+_SUMMARY = "Convert a compiled Business Central AL package (.app) into DBML"
 
-@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+_DESCRIPTION = (
+    "Reads SymbolReference.json from the .app archive and emits one valid "
+    "DBML document with Project, Table, Ref, Enum and TableGroup blocks, "
+    "ready to paste into dbdiagram.io or push to dbdocs.io."
+)
+
+_EXAMPLES = [
+    "al2dbml MyApp.app -o schema.dbml",
+    'al2dbml MyApp.app --include "Sales*" --stats',
+    "al2dbml MyApp.app -d ./myapp-docs/ -o schema.dbml",
+]
+
+
+class _RedHatHelpCommand(click.Command):
+    """Render ``--help`` in the section layout Red Hat CLIs use.
+
+    Mirrors the Cobra help format of podman/buildah/skopeo: a one-line
+    summary, then ``Description:`` / ``Usage:`` / ``Examples:`` /
+    ``Options:`` sections, with the options as one flat alphabetical
+    two-column list — short flags aligned left, long-only flags indented
+    to the long-flag column, defaults appended in parentheses. Only
+    ``format_help`` is overridden; usage lines in error messages keep
+    click's default rendering.
+    """
+
+    def format_help(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
+        width = formatter.width or 80
+        formatter.write(f"{_SUMMARY}\n\n")
+        formatter.write("Description:\n")
+        formatter.write(wrap_text(_DESCRIPTION, width, initial_indent="  ", subsequent_indent="  "))
+        formatter.write("\n\nUsage:\n")
+        formatter.write(f"  {ctx.command_path} [options] APP\n\n")
+        formatter.write("Examples:\n")
+        for example in _EXAMPLES:
+            formatter.write(f"  {example}\n")
+        formatter.write("\nOptions:\n")
+        self._write_options(ctx, formatter, width)
+
+    def _write_options(
+        self, ctx: click.Context, formatter: click.HelpFormatter, width: int
+    ) -> None:
+        rows = sorted(
+            (
+                self._option_row(param)
+                for param in self.get_params(ctx)
+                if isinstance(param, click.Option)
+            ),
+            key=lambda row: row[2],
+        )
+        # Description column: 3 spaces past the widest flag cell, podman-style.
+        help_col = max(len(flags) for flags, _, _ in rows) + 3
+        for flags, help_text, _ in rows:
+            wrapped = wrap_text(
+                help_text,
+                width,
+                initial_indent=" " * help_col,
+                subsequent_indent=" " * help_col,
+            )
+            formatter.write(f"{flags:<{help_col}}{wrapped.lstrip()}".rstrip() + "\n")
+
+    @staticmethod
+    def _option_row(opt: click.Option) -> tuple[str, str, str]:
+        """Build one (flag-cell, help-text, sort-key) row for the Options list."""
+        shorts = [o for o in opt.opts if not o.startswith("--")]
+        longs = [o for o in opt.opts if o.startswith("--")]
+        # Short+long options start at column 2; long-only options indent to
+        # the long-flag column so every '--' lines up (podman's alignment).
+        cell = f"  {shorts[0]}, {longs[0]}" if shorts else f"      {longs[0]}"
+        if opt.metavar and not opt.is_flag:
+            cell += f" {opt.metavar.lower()}"
+
+        help_text = opt.help or ""
+        if opt.show_default and not opt.is_flag and opt.default is not None:
+            help_text = f"{help_text} (default: {opt.default})"
+        return cell, help_text, longs[0].lstrip("-")
+
+
+@click.command(
+    "al2dbml", cls=_RedHatHelpCommand, context_settings={"help_option_names": ["-h", "--help"]}
+)
 @click.argument(
     "app",
     type=click.Path(exists=True, dir_okay=False, file_okay=True, path_type=Path),
@@ -22,21 +103,24 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     "output",
     type=click.Path(dir_okay=False, writable=True, path_type=Path),
     default=None,
-    help="Write DBML to this file instead of stdout.",
+    metavar="FILE",
+    help="Write DBML to FILE instead of stdout.",
 )
 @click.option(
     "--merge-extensions/--no-merge-extensions",
     default=True,
-    show_default=True,
-    help="Merge TableExtensions into their target tables (vs. emit separate stub tables).",
+    help=(
+        "Merge TableExtensions into their target tables; "
+        "--no-merge-extensions emits separate stub tables (default: merge)."
+    ),
 )
 @click.option(
     "-g",
     "--group",
     "groups",
     multiple=True,
-    metavar="NAME=PATTERN[,PATTERN...]",
-    help="Add an explicit grouping rule. Repeatable.",
+    metavar="NAME=PATTERN",
+    help="Add an explicit grouping rule; patterns comma-separated. Repeatable.",
 )
 @click.option(
     "--no-groups",
@@ -50,12 +134,12 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     type=click.Choice(["namespace", "word", "none"], case_sensitive=False),
     default="namespace",
     show_default=True,
+    metavar="SOURCE",
     help=(
-        "How to derive group names when no explicit --group rule matches. "
-        "'namespace' uses the last segment of the AL namespace path "
-        "(falls back to first-word for un-namespaced tables); "
-        "'word' uses the first whitespace-separated word; "
-        "'none' disables auto-grouping entirely."
+        "Group-name source when no explicit --group rule matches: "
+        "'namespace' uses the last AL namespace segment (first-word "
+        "fallback for un-namespaced tables), 'word' the first "
+        "whitespace-separated word, 'none' disables auto-grouping."
     ),
 )
 @click.option(
@@ -63,7 +147,8 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     type=click.IntRange(min=1),
     default=2,
     show_default=True,
-    help="Drop groups containing fewer than this many tables.",
+    metavar="N",
+    help="Drop groups containing fewer than N tables.",
 )
 @click.option(
     "--table-schema",
@@ -71,7 +156,7 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     metavar="NAME",
     default="dbo",
     show_default=True,
-    help="Schema to render Table declarations under. BC's SQL Server uses 'dbo'.",
+    help="Schema to render Table declarations under; BC's SQL Server uses 'dbo'.",
 )
 @click.option(
     "--enum-schema",
@@ -79,11 +164,7 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     metavar="NAME",
     default="meta",
     show_default=True,
-    help=(
-        "Schema to render Enum declarations under. BC enums are AL-language "
-        "metadata, not SQL objects, so by default they live in 'meta' separate "
-        "from the 'dbo' table schema."
-    ),
+    help="Schema to render Enum declarations under; BC enums are AL metadata, not SQL objects.",
 )
 @click.option(
     "-d",
@@ -91,10 +172,10 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     "docs_dir",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
     default=None,
+    metavar="DIR",
     help=(
-        "Directory of aldoc-generated YAML documentation; field descriptions "
-        "and table summaries overlay onto the diagram. Run "
-        "'aldoc generate <app> -o <dir>' first to produce it."
+        "Overlay field descriptions and table summaries from an "
+        "'aldoc generate <app> -o DIR' output directory."
     ),
 )
 @click.option(
@@ -109,9 +190,7 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     "excludes",
     multiple=True,
     metavar="PATTERN",
-    help=(
-        "Drop tables whose name matches any PATTERN (fnmatch). Applied after --include. Repeatable."
-    ),
+    help="Drop tables whose name matches any PATTERN (fnmatch), after --include. Repeatable.",
 )
 @click.option(
     "--database-type",
@@ -120,9 +199,8 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     default="MSSQL",
     show_default=True,
     help=(
-        "Value for the DBML 'Project { database_type: ... }' header. "
-        "BC's underlying storage is SQL Server, so the default is MSSQL. "
-        "Pass an empty string to omit the database_type line."
+        "Engine label for the DBML 'Project { database_type: ... }' header; "
+        "pass an empty string to omit the line."
     ),
 )
 @click.option(
@@ -131,8 +209,8 @@ from .grouping import GroupingConfig, GroupSource, parse_rule_strings
     is_flag=True,
     default=False,
     help=(
-        "Print object counts (tables, enums, refs, groups) to stderr. "
-        "When used without -o, skips the DBML render entirely for a fast probe."
+        "Print object counts (tables, enums, refs, groups) to stderr; "
+        "without -o, skips the DBML render entirely for a fast probe."
     ),
 )
 @click.version_option(__version__, prog_name="al2dbml")
