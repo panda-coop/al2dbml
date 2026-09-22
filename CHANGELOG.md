@@ -6,6 +6,10 @@ All notable changes to `al2dbml` land here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Man pages `al2dbml(1)` and `al2dbml-validate(1)`, authored as podman-style Markdown under `docs/` and built with `go-md2man` (a new `man` CI job verifies they compile). pip/uv installs can't place files on `MANPATH`, so the pages serve distro packagers, the repo itself, and `man -l`.
+
 ### Changed
 
 - `al2dbml --help` is reshaped into the section layout Red Hat CLIs (podman, buildah) use: a one-line summary, then `Description:` / `Usage:` / `Examples:` / `Options:` sections, with the options as one flat alphabetical two-column list — short flags aligned left, long-only flags indented to the long-flag column, defaults in parentheses. Help texts are tightened to podman-length one-liners; the full flag-by-flag prose stays in the README. No flag names, defaults, or behaviour change.
