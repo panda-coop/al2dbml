@@ -8,6 +8,7 @@ All notable changes to `al2dbml` land here. The format follows
 
 ### Changed
 
+- `al2dbml --help` is reshaped into the section layout Red Hat CLIs (podman, buildah) use: a one-line summary, then `Description:` / `Usage:` / `Examples:` / `Options:` sections, with the options as one flat alphabetical two-column list — short flags aligned left, long-only flags indented to the long-flag column, defaults in parentheses. Help texts are tightened to podman-length one-liners; the full flag-by-flag prose stays in the README. No flag names, defaults, or behaviour change.
 - Project transferred to the [panda-coop](https://github.com/panda-coop) GitHub organization. `[project.urls]` and the README CI badge now point at `github.com/panda-coop/al2dbml`, the author email in package metadata is the panda.coop address, and the `// https://...` line in the generated-DBML provenance header carries the new URL. The old `mykola-kharchenko/al2dbml` URLs redirect, so nothing breaks for existing consumers. License and copyright are unchanged (MIT, Mykola Kharchenko).
 
 ## [0.9.0] - 2026-05-29

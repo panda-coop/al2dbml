@@ -31,6 +31,68 @@ def test_help_mentions_group_option() -> None:
     assert "APP" in result.output
 
 
+def test_help_sections_appear_in_podman_order() -> None:
+    # The Red Hat CLI layout: one-line summary first, then the
+    # Description / Usage / Examples / Options sections in that order.
+    runner = CliRunner()
+    result = runner.invoke(main, ["--help"])
+    assert result.exit_code == 0
+    lines = result.output.splitlines()
+    assert lines[0] == "Convert a compiled Business Central AL package (.app) into DBML"
+    headers = ("Description:", "Usage:", "Examples:", "Options:")
+    positions = [result.output.index(h) for h in headers]
+    assert positions == sorted(positions)
+    assert "  al2dbml [options] APP" in lines
+
+
+def test_help_lists_every_option() -> None:
+    runner = CliRunner()
+    result = runner.invoke(main, ["--help"])
+    assert result.exit_code == 0
+    for flag in (
+        "--database-type",
+        "-d, --docs",
+        "--enum-schema",
+        "--exclude",
+        "-g, --group",
+        "--group-by",
+        "-h, --help",
+        "--include",
+        "--merge-extensions",
+        "--min-group-size",
+        "--no-groups",
+        "-o, --output",
+        "--stats",
+        "--table-schema",
+        "--version",
+    ):
+        assert flag in result.output, f"missing from --help: {flag}"
+
+
+def test_help_options_are_alphabetical_and_aligned() -> None:
+    # Long-only options indent to the long-flag column (6 spaces) so every
+    # '--' lines up under the short-flag entries, and the flat list sorts
+    # alphabetically by long name — both podman conventions.
+    runner = CliRunner()
+    result = runner.invoke(main, ["--help"])
+    options_block = result.output.split("Options:\n", 1)[1]
+    flags = []
+    for line in options_block.splitlines():
+        if line.startswith("  -") and not line.startswith("      "):
+            flags.append(line.split(", --", 1)[1].split()[0])
+        elif line.startswith("      --"):
+            flags.append(line.strip().split()[0].lstrip("-"))
+    assert flags == sorted(flags)
+    assert len(flags) == 15
+
+
+def test_help_shows_defaults() -> None:
+    runner = CliRunner()
+    result = runner.invoke(main, ["--help"])
+    for default in ("(default: MSSQL)", "(default: dbo)", "(default: meta)", "(default: 2)"):
+        assert default in result.output
+
+
 def test_output_to_file_prints_to_stderr(tmp_path: Path) -> None:
     app = _make_app(tmp_path)
     out = tmp_path / "schema.dbml"
