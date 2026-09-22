@@ -135,11 +135,11 @@ diagram = Diagram.from_app(
     "MyApp.app",
     grouping=GroupingConfig(rules={"Documents": ["Sales*", "Purch*"]}),
     includes=["Sales*", "Customer"],
-    docs=...,                            # optional AldocDocs from al2dbml.aldoc.load_docs
+    docs=...,  # optional AldocDocs from al2dbml.aldoc.load_docs
 )
-print(diagram.dbml())                    # build + render
-print(diagram.stats())                   # {'tables': N, 'columns': N, ...}
-print(diagram.context.tables.keys())     # inspect the live BuildContext
+print(diagram.dbml())  # build + render
+print(diagram.stats())  # {'tables': N, 'columns': N, ...}
+print(diagram.context.tables.keys())  # inspect the live BuildContext
 ```
 
 `Diagram` is a single-shot dataclass: `build()` is cached, so mutating its fields after the first call has no effect. Construct a new instance to rebuild with different settings.
