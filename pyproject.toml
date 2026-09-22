@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "al2dbml"
-version = "0.9.0"
+version = "0.10.0"
 description = "Convert compiled Microsoft Dynamics 365 Business Central AL packages (.app) into DBML schemas."
 readme = "README.md"
 requires-python = ">=3.10"

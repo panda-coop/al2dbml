@@ -7,4 +7,4 @@ circular import. The package's ``__init__`` re-exports the constants from here.
 
 from __future__ import annotations
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"

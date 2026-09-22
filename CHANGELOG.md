@@ -4,7 +4,9 @@ All notable changes to `al2dbml` land here. The format follows
 [Keep a Changelog](https://keepachangelog.com/) and the project follows
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.10.0] - 2026-09-22
+
+First release from the panda-coop organization. The CLI's `--help` moves to the Red Hat section layout and the project gains man pages; the DBML output changes only in the provenance header URL, hence the minor bump.
 
 ### Added
 
@@ -302,6 +304,7 @@ Initial release.
 - `al2dbml` console script with `-o`, `--merge-extensions/--no-merge-extensions`, `-g`, `--no-groups`, `--no-auto-groups`, `--min-group-size`, `--version`, `-h/--help`.
 - Public Python API: `Generator`, `generate`, `GroupingConfig`, `__version__`.
 
+[0.10.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.10.0
 [0.9.0]: https://github.com/panda-coop/al2dbml/releases/tag/v0.9.0
 [0.8.3]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.3
 [0.8.2]: https://github.com/panda-coop/al2dbml/releases/tag/v0.8.2
