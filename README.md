@@ -166,4 +166,10 @@ python -m venv .venv
 .venv/bin/ruff check . && .venv/bin/ruff format --check .
 ```
 
+Contributions require a DCO sign-off — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Man pages (`al2dbml(1)`, `al2dbml-validate(1)`) live as podman-style Markdown under
+[`docs/`](docs/) and build with `go-md2man`; the `man` CI job verifies they compile.
+Read one locally with `go-md2man -in docs/al2dbml.1.md | man -l -`.
+
 Tags matching `v*` trigger a PyPI Trusted Publisher upload via `.github/workflows/publish.yml`.
