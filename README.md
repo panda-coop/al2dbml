@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/al2dbml.svg)](https://pypi.org/project/al2dbml/)
 [![Python versions](https://img.shields.io/pypi/pyversions/al2dbml.svg)](https://pypi.org/project/al2dbml/)
-[![CI](https://github.com/mykola-kharchenko/al2dbml/actions/workflows/ci.yml/badge.svg)](https://github.com/mykola-kharchenko/al2dbml/actions/workflows/ci.yml)
+[![CI](https://github.com/panda-coop/al2dbml/actions/workflows/ci.yml/badge.svg)](https://github.com/panda-coop/al2dbml/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 

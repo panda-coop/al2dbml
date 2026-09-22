@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-    { name = "Mykola Kharchenko", email = "mykola.kharchenko@outlook.com" },
+    { name = "Mykola Kharchenko", email = "mykola.kharchenko@panda.coop" },
 ]
 keywords = [
     "dbml",
@@ -55,8 +55,8 @@ al2dbml = "al2dbml.__main__:main"
 al2dbml-validate = "al2dbml.validate:main"
 
 [project.urls]
-Homepage = "https://github.com/mykola-kharchenko/al2dbml"
-Issues = "https://github.com/mykola-kharchenko/al2dbml/issues"
+Homepage = "https://github.com/panda-coop/al2dbml"
+Issues = "https://github.com/panda-coop/al2dbml/issues"
 
 [tool.setuptools.packages.find]
 include = ["al2dbml*"]
